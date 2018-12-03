@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android" id="cordova-plugin-camera-preview2" version="0.0.1">
+   <name>CameraPreview</name>
+   <js-module name="CameraPreview" src="www/CameraPreview.js">
+      <clobbers target="cordova.plugins.CameraPreview" />
+   </js-module>
+   <platform name="android">
+      <config-file parent="/*" target="res/xml/config.xml">
+         <feature name="CameraPreview">
+            <param name="android-package" value="com.cordovacamerapreview2.CameraPreview" />
+         </feature>
+      </config-file>
+      <config-file parent="/*" target="AndroidManifest.xml" />
+      <source-file src="src/android/CameraPreview.java" target-dir="src/cordova-plugin-camera-preview2/CameraPreview" />
+      <source-file src="src/android/AutoFitTextureView.java" target-dir="src/cordova-plugin-camera-preview2/CameraPreview" />
+      <source-file src="src/android/Camera2BasicFragment.java" target-dir="src/cordova-plugin-camera-preview2/CameraPreview" />
+      <source-file src="src/android/CameraActivity.java" target-dir="src/cordova-plugin-camera-preview2/CameraPreview" />
+      <source-file src="src/android/R.java" target-dir="src/cordova-plugin-camera-preview2/CameraPreview" />
+      <source-file src="src/android/layout/activity_camera.xml" target-dir="res/layout" />
+      <source-file src="src/android/layout/fragment_camera2_basic.xml" target-dir="res/layout" />
+      <!-- <source-file src="src/android/values/base-strings.xml" target-dir="res/values" /> -->
+      <source-file src="src/android/values/colors.xml" target-dir="res/values" />
+      <!-- <source-file src="src/android/values/strings.xml" target-dir="res/values" /> -->
+      <source-file src="src/android/values/styles.xml" target-dir="res/values" />
+      <source-file src="src/android/values/template-dimens.xml" target-dir="res/values" />
+      <source-file src="src/android/values/template-styles.xml" target-dir="res/values" />
+
+      <config-file target="res/xml/config.xml" parent="/*">
+      <feature name="CameraPreview">
+        <param name="android-package" value="com.cordovacamerapreview2.CameraPreview" />
+        <param name="onload" value="true"/>
+      </feature>
+    </config-file>
+
+    <config-file target="AndroidManifest.xml" parent="/manifest">
+      <uses-feature android:name="android.hardware.camera" android:required="true"/>
+      <uses-feature android:name="android.hardware.camera.autofocus" />
+      <uses-permission android:name="android.permission.CAMERA" />
+    </config-file>
+
+    <config-file target="AndroidManifest.xml" parent="/manifest/application">
+              <activity android:name="com.cordovacamerapreview2.CameraActivity"
+                  android:label="@string/app_name"
+                   android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </config-file>
+  </platform>
+
+</plugin>

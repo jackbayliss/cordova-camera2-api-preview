@@ -1,0 +1,17 @@
+{
+  "name": "cordova-plugin-camera-preview2",
+  "version": "0.0.1",
+  "description": "Cordova camera preview for Android Camera2 API",
+  "cordova": {
+    "id": "cordova-plugin-camera-preview2",
+    "platforms": [
+      "android"
+    ]
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android"
+  ],
+  "author": "Jack Bayliss",
+  "license": "MIT"
+}
