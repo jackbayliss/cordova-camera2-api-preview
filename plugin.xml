@@ -24,8 +24,8 @@
     </config-file>
 
     <config-file target="AndroidManifest.xml" parent="/manifest/application">
-         <activity android:name="com.cordova.camerapreview2.CameraActivity" android:screenOrientation="portrait" android:theme="@style/Theme.AppCompat" />
-         <activity android:name="com.cordova.camerapreview2.CameraPreview" android:screenOrientation="portrait" android:theme="@style/Theme.AppCompat" />
+         <activity android:name="com.cordova.camerapreview2.CameraActivity" android:screenOrientation="portrait" android:theme="@style/Theme.AppCompat.NoActionBar" />
+         <activity android:name="com.cordova.camerapreview2.CameraPreview" android:screenOrientation="portrait" android:theme="@style/Theme.AppCompat.NoActionBar" />
     </config-file>
 
        <config-file target="AndroidManifest.xml" parent="/manifest">
