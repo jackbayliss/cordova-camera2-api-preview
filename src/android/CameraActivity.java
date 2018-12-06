@@ -1,4 +1,4 @@
-package com.example.android.camera2basic;
+package com.cordova.camerapreview2;
 
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -16,19 +16,25 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.camerakit.CameraKitView;
-import com.example.android.camera2basic.R;
 import java.util.ArrayList;
 import java.util.List;
+import android.view.LayoutInflater;
+import java.io.File;
+import java.io.FileOutputStream;
+import android.os.Environment;
 
 public class CameraActivity extends AppCompatActivity {
 
     private static final String TAG = CameraActivity.class.getSimpleName();
     private CameraKitView cameraKitView;
+    private String appResourcesPackage;
+    private Environment Environment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+    appResourcesPackage = getApplicationContext().getPackageName();
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_camera);
-    cameraKitView = findViewById(R.id.camera);
+    setContentView(getResources().getIdentifier("activity_main", "layout", appResourcesPackage));
+    cameraKitView = findViewById(getResources().getIdentifier("camera", "id", appResourcesPackage));
     }
     @Override
     protected void onStart() {
@@ -55,4 +61,20 @@ public class CameraActivity extends AppCompatActivity {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     cameraKitView.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
-}
+
+    public void TakeImage(){
+        cameraKitView.captureImage(new CameraKitView.ImageCallback() {
+            @Override
+            public void onImage(CameraKitView cameraKitView, final byte[] capturedImage) {
+                File savedPhoto = new File(Environment.getExternalStorageDirectory(), "photo.jpg");
+                try {
+                    FileOutputStream outputStream = new FileOutputStream(savedPhoto.getPath());
+                    outputStream.write(capturedImage);
+                    outputStream.close();
+                } catch (java.io.IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+    }

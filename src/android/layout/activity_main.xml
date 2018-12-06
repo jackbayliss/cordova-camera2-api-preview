@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.android.camera2basic.CameraPreview">
+   android:layout_gravity="center_horizontal|top"
+   android:layout_weight=".7"
+    tools:context="com.cordova.camerapreview2.CameraPreview">
 
     <com.camerakit.CameraKitView
         android:id="@+id/camera"
@@ -12,9 +14,9 @@
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:keepScreenOn="true"
-        app:camera_flash="auto"
+        app:camera_flash="off"
         app:camera_facing="back"
         app:camera_focus="continuous"
         app:camera_permissions="camera" />
 
-</android.support.constraint.ConstraintLayout>
+</FrameLayout>

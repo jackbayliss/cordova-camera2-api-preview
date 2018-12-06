@@ -1,20 +1,8 @@
 var exec = require('cordova/exec');
 
-var testing = function(){};
-
-testing.prototype.camera = function (arg0, success, error) {
+exports.startCameraPreview = function (arg0, success, error) {
     exec(success, error, 'CameraPreview', 'CameraActivity', [arg0]);
 };
-
-testing.install = function () {
-    if (!window.plugins) {
-      window.plugins = {};
-  
-    }
-  
-    window.plugins.start = new testing();
-    return window.plugins.start;
-  
-  };
-  
-cordova.addConstructor(testing.install);
+exports.takePhoto = function (arg0, success, error) {
+    exec(success, error, 'CameraPreview', 'takePhoto', [arg0]);
+};

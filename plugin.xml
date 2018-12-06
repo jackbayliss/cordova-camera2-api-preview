@@ -8,25 +8,24 @@
    <platform name="android">
       <config-file parent="/*" target="res/xml/config.xml">
          <feature name="CameraPreview">
-            <param name="android-package" value="com.example.android.camera2basic.CameraPreview" />
+            <param name="android-package" value="com.cordova.camerapreview2.CameraPreview" />
          </feature>
       </config-file>
       <config-file parent="/*" target="AndroidManifest.xml" />
       <source-file src="src/android/CameraActivity.java" target-dir="src/com/example/android/camera2basic/CameraActivity" />
       <source-file src="src/android/CameraPreview.java" target-dir="src/com/example/android/camera2basic/CameraPreview" />
-      <source-file src="src/android/R.java" target-dir="src/com/example/android/camera2basic/R" />
-
-      <source-file src="src/android/layout/activity_camera.xml" target-dir="res/layout" />
+      
+      <source-file src="src/android/layout/activity_main.xml" target-dir="res/layout" />
       <config-file target="res/xml/config.xml" parent="/*">
       <feature name="CameraPreview">
-        <param name="android-package" value="com.example.android.camera2basic.CameraPreview" />
+        <param name="android-package" value="com.cordova.camerapreview2.CameraPreview" />
         <param name="onload" value="true"/>
       </feature>
     </config-file>
 
     <config-file target="AndroidManifest.xml" parent="/manifest/application">
-         <activity android:name="com.example.android.camera2basic.CameraActivity" android:screenOrientation="portrait" android:theme="@style/Theme.AppCompat" />
-         <activity android:name="com.example.android.camera2basic.CameraPreview" android:screenOrientation="portrait" android:theme="@style/Theme.AppCompat" />
+         <activity android:name="com.cordova.camerapreview2.CameraActivity" android:screenOrientation="portrait" android:theme="@style/Theme.AppCompat" />
+         <activity android:name="com.cordova.camerapreview2.CameraPreview" android:screenOrientation="portrait" android:theme="@style/Theme.AppCompat" />
     </config-file>
 
        <config-file target="AndroidManifest.xml" parent="/manifest">
