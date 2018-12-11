@@ -16,7 +16,7 @@
         android:keepScreenOn="true"
         app:camera_flash="off"
         app:camera_facing="back"
-        app:camera_focus="continuous"
+        app:camera_focus="off"
         app:camera_permissions="camera" />
 
 </FrameLayout>

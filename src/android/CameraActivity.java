@@ -16,43 +16,69 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.camerakit.CameraKitView;
+import com.camerakit.CameraKit;
 import java.util.ArrayList;
 import java.util.List;
 import android.view.LayoutInflater;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import android.os.Environment;
+import android.app.Fragment;
+import android.util.Base64;
+import android.graphics.BitmapFactory;
+import android.graphics.Bitmap.CompressFormat;
+import android.graphics.Bitmap;
 
-public class CameraActivity extends AppCompatActivity {
+public class CameraActivity extends Fragment {
 
     private static final String TAG = CameraActivity.class.getSimpleName();
     private CameraKitView cameraKitView;
-    private String appResourcesPackage;
-    private Environment Environment;
+    private CameraPreviewListener eventListener;
+
+
+    public interface CameraPreviewListener {
+        void onPictureTaken(String originalPicture);
+      }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-    appResourcesPackage = getApplicationContext().getPackageName();
-    super.onCreate(savedInstanceState);
-    setContentView(getResources().getIdentifier("activity_main", "layout", appResourcesPackage));
-    cameraKitView = findViewById(getResources().getIdentifier("camera", "id", appResourcesPackage));
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+            Bundle savedInstanceState) {
+        View view = inflater.inflate(getResources().getIdentifier("activity_main", "layout", getActivity().getPackageName()), container, false);
+
+        cameraKitView = view.findViewById(getResources().getIdentifier("camera", "id", getActivity().getPackageName()));
+        cameraKitView.setFocus(CameraKit.FOCUS_OFF);
+        cameraKitView.setImageMegaPixels(0.1f);
+        cameraKitView.setSensorPreset(CameraKit.SENSOR_PRESET_NONE);
+        return view;
     }
+    public void setEventListener(CameraPreviewListener listener){
+        eventListener = listener;
+      }
     @Override
-    protected void onStart() {
+    public void onActivityCreated(Bundle savedInstanceState) {
+        Log.v(TAG, "ON CREATE");
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public void onStart() {
     super.onStart();
     cameraKitView.onStart();
     }
     @Override
-    protected void onResume() {
+    public void onResume() {
     super.onResume();
     cameraKitView.onResume();
     }
     @Override
-    protected void onPause() {
+    public void onPause() {
     cameraKitView.onPause();
     super.onPause();
     }
     @Override
-    protected void onStop() {
+    public void onStop() {
     cameraKitView.onStop();
     super.onStop();
     }
@@ -62,19 +88,24 @@ public class CameraActivity extends AppCompatActivity {
     cameraKitView.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-    public void TakeImage(){
-        cameraKitView.captureImage(new CameraKitView.ImageCallback() {
-            @Override
-            public void onImage(CameraKitView cameraKitView, final byte[] capturedImage) {
-                File savedPhoto = new File(Environment.getExternalStorageDirectory(), "photo.jpg");
-                try {
-                    FileOutputStream outputStream = new FileOutputStream(savedPhoto.getPath());
-                    outputStream.write(capturedImage);
-                    outputStream.close();
-                } catch (java.io.IOException e) {
-                    e.printStackTrace();
+    public void takePicture(){
+        new Thread() {
+            public void run() {
+            cameraKitView.captureImage(new CameraKitView.ImageCallback() {
+                @Override
+                public void onImage(CameraKitView cameraKitView,byte[] data) {
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, outputStream);
+                    data = outputStream.toByteArray();
+                    String encodedImage = Base64.encodeToString(data, Base64.NO_WRAP);
+    
+              eventListener.onPictureTaken(encodedImage);
                 }
-            }
-        });
+            });
+        }
+        }.start();
     }
-    }
+    
+
+}

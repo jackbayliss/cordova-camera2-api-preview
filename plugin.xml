@@ -12,8 +12,8 @@
          </feature>
       </config-file>
       <config-file parent="/*" target="AndroidManifest.xml" />
-      <source-file src="src/android/CameraActivity.java" target-dir="src/com/example/android/camera2basic/CameraActivity" />
-      <source-file src="src/android/CameraPreview.java" target-dir="src/com/example/android/camera2basic/CameraPreview" />
+      <source-file src="src/android/CameraActivity.java" target-dir="src/com/camerapreview2/CameraActivity" />
+      <source-file src="src/android/CameraPreview.java" target-dir="src/com/camerapreview2/CameraPreview" />
       
       <source-file src="src/android/layout/activity_main.xml" target-dir="res/layout" />
       <config-file target="res/xml/config.xml" parent="/*">

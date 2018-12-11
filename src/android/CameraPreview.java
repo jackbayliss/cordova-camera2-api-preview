@@ -4,23 +4,34 @@ import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.CordovaInterface;
+import org.apache.cordova.PluginResult;
 import android.content.Intent;
 import android.content.Context;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import com.camerakit.CameraKitView;
+import android.view.ViewParent;
+import android.view.ViewGroup;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.widget.FrameLayout;
 
-
-public class CameraPreview extends CordovaPlugin {
+public class CameraPreview extends CordovaPlugin implements CameraActivity.CameraPreviewListener {
     
+    private ViewParent webViewParent;
     private CallbackContext callback = null;
+    private String appResourcesPackage;
+    private CameraActivity fragment;
+    private CallbackContext takePictureCallbackContext;
+    private int containerViewId = 20;
+    
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
     }
     
-  private String appResourcesPackage;
-    private CameraActivity cameraKitView;
+
+    
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         Context context = cordova.getActivity().getApplicationContext();
@@ -31,18 +42,57 @@ public class CameraPreview extends CordovaPlugin {
             callbackContext.success("Camera started");
             return true;
         }else if(action.equals("takePhoto")){
-            // Take picture
-            callbackContext.success("Take photo");
+            return takePicture(callbackContext);
         }
         return false;
     }
     private Intent intent;
-
+    private Intent notificationIntent;
     private void openNewActivity(String name,Context context) {
-        
-        this.cordova.setActivityResultCallback (this);
-        Intent intent = new Intent(context,  CameraActivity.class);
-        this.cordova.getActivity().startActivityForResult(intent,99);
+        fragment = new CameraActivity();
+        fragment.setEventListener(this);
+        cordova.getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                
+
+
+        FrameLayout containerView = (FrameLayout)cordova.getActivity().findViewById(containerViewId);
+        containerView = new FrameLayout(cordova.getActivity().getApplicationContext());
+        containerView.setId(containerViewId);
+        FrameLayout.LayoutParams containerLayoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+        cordova.getActivity().addContentView(containerView, containerLayoutParams);
+        webView.getView().setBackgroundColor(0x00000000);
+        webViewParent = webView.getView().getParent();
+        ((ViewGroup)webView.getView()).bringToFront();
+        FragmentManager fragmentManager = cordova.getActivity().getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.add(containerView.getId(), fragment);
+        fragmentTransaction.commit();
     }
+});
+
+
+}
+
+private boolean takePicture(CallbackContext callbackContext) {
+
+    takePictureCallbackContext = callbackContext;
+    fragment.takePicture();
+
+    return true;
+  }
+
+
+  public void onPictureTaken(String originalPicture) {
+
+    JSONArray data = new JSONArray();
+    data.put(originalPicture);
+
+    PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, data);
+    pluginResult.setKeepCallback(true);
+    takePictureCallbackContext.sendPluginResult(pluginResult);
+  }
+
 
 }
