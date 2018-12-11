@@ -11,7 +11,7 @@ To access the camera download the zip & copy it into a folder outside of your pr
 Then, open a terminal in your ionic project and do the following.
 
 ```
-ionic cordova add ../CameraPreview
+ionic cordova plugin add ../CameraPreview
 
 ```
 
