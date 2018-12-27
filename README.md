@@ -33,8 +33,8 @@ Want to contribute? Feel free to PR.
 
 ### Todos
 
- ~~- Embed within the Ionic Activity itself (or under), so it doesn't overlay ~~(done)
- ~~- Add TakePicture ability.~~(done)
+<strike>- Embed within the Ionic Activity itself (or under), so it doesn't overlay </strike>(done)
+<strike>- Add TakePicture ability. </strike>(done)
  - iOS implementation?
 
 License
