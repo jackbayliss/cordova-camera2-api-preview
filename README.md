@@ -1,6 +1,8 @@
 # Cordova Camera 2 API Preview
 Cordova camera preview using  https://github.com/CameraKit/camerakit-android 
 
+(So covers camera api 1 & 2)
+
 Not an Android / Cordova Developer PR's appreciated. 
 
 
