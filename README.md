@@ -34,9 +34,6 @@ ionic cordova run android --device
 Want to contribute? Feel free to PR.
 
 ### Todos
-
- - Embed within the Ionic Activity itself (or under), so it doesn't overlay
- - Add TakePicture ability.
  - iOS implementation?
 
 License
