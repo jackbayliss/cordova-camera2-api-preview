@@ -1,13 +1,13 @@
-package com.cordova.camerapreview2;
+package com.jackbayliss.camerapreview2;
 
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +15,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import com.camerakit.CameraKitView;
-import com.camerakit.CameraKit;
+
+
+import com.otaliastudios.cameraview.CameraView;
+import com.otaliastudios.cameraview.CameraListener;
+import com.otaliastudios.cameraview.CameraOptions;
+
+import com.otaliastudios.cameraview.PictureResult;
+
 import java.util.ArrayList;
 import java.util.List;
 import android.view.LayoutInflater;
@@ -30,14 +36,18 @@ import android.util.Base64;
 import android.graphics.BitmapFactory;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
+
+import android.os.Handler;
+import android.os.HandlerThread;
 
 public class CameraActivity extends Fragment {
 
     private static final String TAG = CameraActivity.class.getSimpleName();
-    private CameraKitView cameraKitView;
+    private CameraView mCameraView;
     private CameraPreviewListener eventListener;
-
-
+    private Handler mBackgroundHandler;
+    private static int orientationchange;
     public interface CameraPreviewListener {
         void onPictureTaken(String originalPicture);
       }
@@ -46,11 +56,21 @@ public class CameraActivity extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         View view = inflater.inflate(getResources().getIdentifier("activity_main", "layout", getActivity().getPackageName()), container, false);
+        mCameraView  = view.findViewById(getResources().getIdentifier("camera", "id", getActivity().getPackageName()));
 
-        cameraKitView = view.findViewById(getResources().getIdentifier("camera", "id", getActivity().getPackageName()));
-        cameraKitView.setFocus(CameraKit.FOCUS_OFF);
-        cameraKitView.setImageMegaPixels(0.1f);
-        cameraKitView.setSensorPreset(CameraKit.SENSOR_PRESET_NONE);
+        mCameraView.addCameraListener(new CameraListener() {
+            public void onPictureTaken(PictureResult result) { handlePicture(result); }
+
+            public void onCameraOpened(CameraOptions options) {
+                mCameraView.setPlaySounds(false);
+                mCameraView.setZoom(0.7f);
+            }
+
+            public void onOrientationChanged(int orientation) {
+                orientationchange = orientation;
+            }
+
+        });
         return view;
     }
     public void setEventListener(CameraPreviewListener listener){
@@ -62,50 +82,62 @@ public class CameraActivity extends Fragment {
         super.onActivityCreated(savedInstanceState);
     }
 
-    @Override
-    public void onStart() {
-    super.onStart();
-    cameraKitView.onStart();
-    }
+   
     @Override
     public void onResume() {
-    super.onResume();
-    cameraKitView.onResume();
+        super.onResume();
+        mCameraView.open();
     }
+
     @Override
     public void onPause() {
-    cameraKitView.onPause();
-    super.onPause();
+        mCameraView.close();
+        super.onPause();
     }
     @Override
-    public void onStop() {
-    cameraKitView.onStop();
-    super.onStop();
-    }
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    cameraKitView.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
+    public void onDestroy() {
+    super.onDestroy();
+    mCameraView.close();
+}
+    
 
-    public void takePicture(){
+    public void handlePicture(PictureResult result){
+        
         new Thread() {
             public void run() {
-            cameraKitView.captureImage(new CameraKitView.ImageCallback() {
-                @Override
-                public void onImage(CameraKitView cameraKitView,byte[] data) {
+                    byte[] data = result.getData();
+                    int rotation = result.getRotation();
+                    int compensation = (360 - orientationchange + rotation) % 360;
                     Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+
+                    Matrix matrix = new Matrix();
+                    matrix.postRotate(compensation);
+                    Bitmap bmp = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                    
                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, outputStream);
-                    data = outputStream.toByteArray();
-                    String encodedImage = Base64.encodeToString(data, Base64.NO_WRAP);
-    
-              eventListener.onPictureTaken(encodedImage);
+                    bmp.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+                    byte[]   a = outputStream.toByteArray();
+                    String encodedImage = Base64.encodeToString(a, Base64.NO_WRAP);
+
+           
+                    eventListener.onPictureTaken(encodedImage);
                 }
-            });
-        }
-        }.start();
-    }
-    
+         
+                    }.start();
+                }
+
+
+                public void takePicture(){
+                    mCameraView.takePictureSnapshot();
+                    
+                }
 
 }
+
+
+    
+    
+
+
+    
+

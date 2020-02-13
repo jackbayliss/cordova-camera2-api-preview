@@ -1,4 +1,4 @@
-package com.cordova.camerapreview2;
+package com.jackbayliss.camerapreview2;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
@@ -10,7 +10,6 @@ import android.content.Context;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import com.camerakit.CameraKitView;
 import android.view.ViewParent;
 import android.view.ViewGroup;
 import android.app.FragmentManager;
@@ -43,6 +42,8 @@ public class CameraPreview extends CordovaPlugin implements CameraActivity.Camer
             return true;
         }else if(action.equals("takePhoto")){
             return takePicture(callbackContext);
+        }else if(action.equals("stopCamera")){
+            return stopCamera(callbackContext);
         }
         return false;
     }
@@ -62,9 +63,9 @@ public class CameraPreview extends CordovaPlugin implements CameraActivity.Camer
         containerView.setId(containerViewId);
         FrameLayout.LayoutParams containerLayoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
         cordova.getActivity().addContentView(containerView, containerLayoutParams);
-        webView.getView().setBackgroundColor(0x00000000);
-        webViewParent = webView.getView().getParent();
-        ((ViewGroup)webView.getView()).bringToFront();
+        ((ViewGroup)webView.getView().getParent().getParent()).setBackgroundColor(0x00000000);	
+        webViewParent = webView.getView().getParent().getParent();
+        ((ViewGroup)webView.getView().getParent().getParent()).bringToFront();
         FragmentManager fragmentManager = cordova.getActivity().getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(containerView.getId(), fragment);
@@ -92,6 +93,34 @@ private boolean takePicture(CallbackContext callbackContext) {
     PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, data);
     pluginResult.setKeepCallback(true);
     takePictureCallbackContext.sendPluginResult(pluginResult);
+  }
+
+
+  private boolean stopCamera(CallbackContext callbackContext) {
+    fragment.onDestroy();
+    if(webViewParent != null) {
+      cordova.getActivity().runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          ((ViewGroup)webView.getView()).bringToFront();
+          webViewParent = null;
+        }
+      });
+    }
+    
+    ((ViewGroup)webView.getView().getParent().getParent()).setBackgroundColor(0xffffffff);	
+
+    if(fragment!=null){
+      FragmentManager fragmentManager = cordova.getActivity().getFragmentManager();
+      FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+      fragmentTransaction.remove(fragment);
+      fragmentTransaction.commit();
+      fragment = null;
+
+    }
+
+    callbackContext.success();
+    return true;
   }
 
 
